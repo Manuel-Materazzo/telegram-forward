@@ -974,17 +974,18 @@ function onMessageToForward(event, onRefresh = false, onEdit = false) {
         toForward =
           toForward ||
           rule.keywordsGroups.some((keywordsGroup) => {
-            const includes = keywordsGroup.keywords.filter((item) => item.include === true).map((item) => item.keyword),
-              excludes = keywordsGroup.keywords.filter((item) => item.include === false).map((item) => item.keyword);
+            const includes = keywordsGroup.keywords.filter((item) => item.include === true).map((item) => item.keyword.toLowerCase()),
+              excludes = keywordsGroup.keywords.filter((item) => item.include === false).map((item) => item.keyword.toLowerCase());
             let includesFound = false;
+            const lowercaseMessage = message.toLowerCase();
             if (keywordsGroup.includeAll === true) {
-              includesFound = includes.length === 0 || includes.every((item) => message.includes(item));
+              includesFound = includes.length === 0 || includes.every((item) => lowercaseMessage.includes(item));
               log.debug(`[${rule.label}, ${sourceId}, ${messageId}]: All includes are found: ${includesFound}`, logAsUser);
             } else {
-              includesFound = includes.length === 0 || includes.some((item) => message.includes(item));
+              includesFound = includes.length === 0 || includes.some((item) => lowercaseMessage.includes(item));
               log.debug(`[${rule.label}, ${sourceId}, ${messageId}]: Some includes are found: ${includesFound}`, logAsUser);
             }
-            const excludesNotFound = excludes.length === 0 || excludes.find((item) => message.includes(item)) === undefined;
+            const excludesNotFound = excludes.length === 0 || excludes.find((item) => lowercaseMessage.includes(item)) === undefined;
             log.debug(`[${rule.label}, ${sourceId}, ${messageId}]: No any exclude is found: ${excludesNotFound}`, logAsUser);
             return includesFound && excludesNotFound;
           });
